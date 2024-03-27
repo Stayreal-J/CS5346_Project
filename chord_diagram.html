@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chord Diagram</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <svg width="800" height="600" id="chordDiagram"></svg>
+
+    <script>
+        // 假设您已经有了相关系数数据，我们将其保存在一个二维数组中
+        var data = [
+            [1.0,0.9206727661715740,0.9559567421835880,0.7884923844034820,0.9037352052746700], // House_price
+            [0.9206727661715740,1.0,0.98702006160792,0.8412994941581370,0.9913398605274550], // CPI
+            [0.9559567421835880,0.98702006160792,1.0,0.8381354011327720,0.9828413324803960], // GDP
+            [0.7884923844034820,0.8412994941581370,0.8381354011327720,1.0,0.8435188320482120], // Gov_exp
+            [0.9037352052746700,0.9913398605274550,0.9828413324803960,0.8435188320482120,1.0] // Population
+        ];
+
+        // 创建一个SVG元素
+        var svg = d3.select("#chordDiagram"),
+            width = +svg.attr("width"),
+            height = +svg.attr("height"),
+            outerRadius = Math.min(width, height) * 0.5 - 40,
+            innerRadius = outerRadius - 30;
+
+        // 创建chord layout
+        var chord = d3.chord()
+            .padAngle(0.05)
+            .sortSubgroups(d3.descending)
+            (data);
+
+        // 创建颜色比例尺
+        var color = d3.scaleOrdinal()
+            .domain(d3.range(5))
+            .range(["rgba(52, 153, 255, 0.5)", "rgba(255, 153, 52, 0.5)", "rgba(102, 204, 51, 0.5)", "rgba(255, 102, 204, 0.5)", "rgba(204, 51, 255, 0.5)"]);
+
+        // 创建弧生成器
+        var arc = d3.arc()
+            .innerRadius(innerRadius)
+            .outerRadius(outerRadius);
+
+        // 创建弦生成器
+        var ribbon = d3.ribbon()
+            .radius(innerRadius);
+
+        // 绘制弧和弦
+        svg.append("g")
+            .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
+            .selectAll("g")
+            .data(chord.groups)
+            .join("g")
+            .append("path")
+            .attr("fill", d => color(d.index))
+            .attr("d", arc);
+
+        svg.append("g")
+            .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
+            .selectAll("path")
+            .data(chord)
+            .join("path")
+            .attr("fill", d => color(d.source.index))
+            .attr("d", ribbon);
+
+        // 添加标签
+        svg.append("g")
+            .attr("font-family", "sans-serif")
+            .attr("font-size", 10)
+            .attr("text-anchor", "middle")
+            .selectAll("g")
+            .data(chord.groups)
+            .join("g")
+            .attr("transform", d => `rotate(${(d.startAngle + d.endAngle) / 2 * 180 / Math.PI - 90}) translate(${outerRadius + 10},0)`)
+            .append("text")
+
+            
+        var legend = svg.append("g")
+            .attr("font-family", "sans-serif")
+            .attr("font-size", 10)
+            .attr("text-anchor", "start")
+            .selectAll("g")
+            .data(color.domain().slice())
+            .join("g")
+            .attr("transform", (d, i) => "translate(40," + (20 + i * 20) + ")");
+
+        legend.append("rect")
+            .attr("x", -18)
+            .attr("width", 15)
+            .attr("height", 15)
+            .attr("fill", color);
+
+        legend.append("text")
+            .attr("x", 5)
+            .attr("y", 9)
+            .attr("dy", "0.35em")
+            .text((d, i) => {
+                if (i == 0) return "House price";
+                else if (i == 1) return "CPI";
+                else if (i == 2) return "GDP";
+                else if (i == 3) return "Government expenditure";
+                else return "Population";
+            });
+
+
+
+
+    </script>
+</body>
+</html>
+
+
