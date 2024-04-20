@@ -10,7 +10,6 @@
     <svg width="800" height="600" id="chordDiagram"></svg>
 
     <script>
-        // 假设您已经有了相关系数数据，我们将其保存在一个二维数组中
         var data = [
             [1.0,0.9206727661715740,0.9559567421835880,0.7884923844034820,0.9037352052746700], // House_price
             [0.9206727661715740,1.0,0.98702006160792,0.8412994941581370,0.9913398605274550], // CPI
@@ -19,34 +18,32 @@
             [0.9037352052746700,0.9913398605274550,0.9828413324803960,0.8435188320482120,1.0] // Population
         ];
 
-        // 创建一个SVG元素
+        // Create SVG elements
         var svg = d3.select("#chordDiagram"),
             width = +svg.attr("width"),
             height = +svg.attr("height"),
             outerRadius = Math.min(width, height) * 0.5 - 40,
             innerRadius = outerRadius - 30;
 
-        // 创建chord layout
+        // create chord layout
         var chord = d3.chord()
             .padAngle(0.05)
             .sortSubgroups(d3.descending)
             (data);
 
-        // 创建颜色比例尺
+        // design colors
         var color = d3.scaleOrdinal()
             .domain(d3.range(5))
             .range(["rgba(52, 153, 255, 0.5)", "rgba(255, 153, 52, 0.5)", "rgba(102, 204, 51, 0.5)", "rgba(255, 102, 204, 0.5)", "rgba(204, 51, 255, 0.5)"]);
 
-        // 创建弧生成器
         var arc = d3.arc()
             .innerRadius(innerRadius)
             .outerRadius(outerRadius);
 
-        // 创建弦生成器
         var ribbon = d3.ribbon()
             .radius(innerRadius);
 
-        // 绘制弧和弦
+        // draw chords
         svg.append("g")
             .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
             .selectAll("g")
@@ -64,7 +61,7 @@
             .attr("fill", d => color(d.source.index))
             .attr("d", ribbon);
 
-        // 添加标签
+        // add labels
         svg.append("g")
             .attr("font-family", "sans-serif")
             .attr("font-size", 10)

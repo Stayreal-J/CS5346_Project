@@ -50,7 +50,7 @@
       .domain([1,100])
 
     //Read the data
-    d3.csv().then( function(data) {
+    d3.csv("https://raw.githubusercontent.com/Stayreal-J/CS5346_Project/main/correlation_matrix.csv?token=GHSAT0AAAAAACPU3NQ2QIPJ5YHHCJ4JMZC4ZQDPHEA").then( function(data) {
 
       svg.selectAll()
           .data(data, function(d) {return d.group+':'+d.variable;})
